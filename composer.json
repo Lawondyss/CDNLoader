@@ -1,0 +1,25 @@
+{
+  "name": "lawondyss/cdnloader",
+  "description": "Tool for loading CSS and JS files from cdnjs.com into web pages.",
+  "keywords": ["cdnloader", "css", "javascript", "assets", "nette", "cdnjs"],
+  "homepage": "http://addons.nette.org/cs/cdnloader",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Ladislav Vondráček",
+      "email": "lad.von@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-0": {
+      "CDNLoader": "src"
+    }
+  },
+  "require": {
+    "php": ">= 5.3.2",
+    "nette/nette": ">= 2.2.3"
+  },
+  "require-dev": {
+    "nette/tester": "1.2.0"
+  }
+}
