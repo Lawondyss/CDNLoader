@@ -20,3 +20,18 @@ if (!is_readable(TEMP_DIR) || !is_writable(TEMP_DIR)) {
 }
 
 \Tester\Environment::setup();
+
+
+function clearTemp($directory = TEMP_DIR) {
+  $files = \Nette\Utils\Finder::find('*')->exclude('.*')->in($directory);
+  foreach ($files as $path => $file) {
+    if ($file->isDir()) {
+      clearTemp($path);
+      @rmdir($path);
+    }
+    else {
+      @unlink($path);
+    }
+  }
+  @rmdir($directory);
+}

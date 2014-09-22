@@ -9,6 +9,9 @@ use Tester\Assert;
 class FileTest extends TestCase
 {
   /** @var string */
+  private $tempDir;
+
+  /** @var string */
   private $readFile;
 
   /** @var string */
@@ -20,9 +23,12 @@ class FileTest extends TestCase
 
   protected function setUp()
   {
+    $this->tempDir = TEMP_DIR . '/file-' . md5(microtime());
+    mkdir($this->tempDir);
+
     $this->readFile = TEMP_DIR . '/.toRead';
-    $this->writeFile = TEMP_DIR . '/data.txt';
-    $this->toRemoveDir = TEMP_DIR . '/toRemove';
+    $this->writeFile = $this->tempDir . '/data.txt';
+    $this->toRemoveDir = $this->tempDir . '/toRemove';
 
     if (!is_readable($this->readFile)) {
       chmod($this->readFile, 0555);
@@ -32,13 +38,7 @@ class FileTest extends TestCase
 
   protected function tearDown()
   {
-    if (file_exists($this->writeFile)) {
-      unlink($this->writeFile);
-    }
-
-    if (file_exists($this->toRemoveDir)) {
-      rmdir($this->toRemoveDir);
-    }
+    clearTemp($this->tempDir);
   }
 
 

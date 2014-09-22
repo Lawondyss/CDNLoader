@@ -7,6 +7,9 @@ use Tester\Assert;
 
 class CompilerTest extends \Tester\TestCase
 {
+  /** @var string */
+  private $tempDir;
+
   /** @var \CDNLoader\Compiler */
   private $compiler;
 
@@ -43,7 +46,16 @@ class CompilerTest extends \Tester\TestCase
 
   protected function setUp()
   {
+    $this->tempDir = TEMP_DIR . '/compiler-' . md5(microtime());
+    mkdir($this->tempDir);
+
     $this->compiler = new Compiler;
+  }
+
+
+  protected function tearDown()
+  {
+    clearTemp($this->tempDir);
   }
 
 
@@ -57,22 +69,20 @@ class CompilerTest extends \Tester\TestCase
   {
     Assert::null($this->compiler->getOutputDir());
 
-    $returnValue = $this->compiler->setOutputDir(TEMP_DIR, false);
+    $returnValue = $this->compiler->setOutputDir($this->tempDir, false);
     Assert::type('CDNLoader\Compiler', $returnValue);
 
-    Assert::same(TEMP_DIR, $this->compiler->getOutputDir());
+    Assert::same($this->tempDir, $this->compiler->getOutputDir());
   }
 
 
   public function testMakeOutputDirectory()
   {
-    $outputDir = TEMP_DIR . '/toRemove';
+    $outputDir = $this->tempDir . '/toRemove';
     Assert::false(file_exists($outputDir));
 
     $this->compiler->setOutputDir($outputDir);
     Assert::true(file_exists($outputDir));
-
-    rmdir($outputDir);
   }
 
 
@@ -102,7 +112,7 @@ class CompilerTest extends \Tester\TestCase
 
   public function testGenerate()
   {
-    $outputDir = TEMP_DIR . '/source';
+    $outputDir = $this->tempDir . '/source';
     $this->compiler
       ->setLibraries($this->optionLibraries)
       ->setOutputDir($outputDir)
@@ -119,11 +129,6 @@ class CompilerTest extends \Tester\TestCase
     Assert::same($expectedFiles, glob($outputDir . '/*'));
 
     Assert::same(array($outputDir . '/cdn-libraries.js'), $this->compiler->getFiles());
-
-    foreach ($expectedFiles as $file) {
-      unlink($file);
-    }
-    rmdir($outputDir);
   }
 
 }
