@@ -12,7 +12,7 @@ use Nette\Utils\Finder;
 class Compiler
 {
   /** @var string */
-  private $cdnUrl = 'https://cdnjs.cloudflare.com/ajax/libs/{{NAME}}/{{VERSION}}/{{FILE}}';
+  private $cdnUrl = 'https://cdnjs.cloudflare.com/ajax/libs/{{NAME}}/{{VERSION}}~{{FILE}}';
 
   /** @var string */
   private $outputDir;
@@ -152,12 +152,7 @@ class Compiler
   public function generate()
   {
     if (!$this->isModified()) {
-      $files = Finder::findFiles('*.js', '*.css')->in($this->getOutputDir());
-
-      foreach ($files as $file => $fileInfo) {
-        $this->files[] = $file;
-      }
-
+      $this->loadFiles();
       return;
     }
 
@@ -165,16 +160,8 @@ class Compiler
 
     $this->writeHash();
 
-    foreach ($this->libraries as $library) {
-      $content = $this->getContent($library) . PHP_EOL;
-      $suffix = strrchr($library, '.');
-      $path = $this->getOutputDir() . File::DS . $this->filename . $suffix;
-
-      File::write($path, $content, true);
-
-      if (!in_array($path, $this->files)) {
-        $this->files[] = $path;
-      }
+    foreach ($this->libraries as $libraryUrl) {
+      $this->saveFile($libraryUrl);
     }
   }
 
@@ -192,6 +179,30 @@ class Compiler
 
     $hash = File::read($hashFile);
     return $hash !== $this->getCheckHash();
+  }
+
+
+  /**
+   * Specifies that file is linkable for html.
+   *
+   * @param string $file
+   * @return bool
+   */
+  private function isLinkable($file)
+  {
+    $suffix = $this->getSuffix($file);
+    return in_array($suffix, array('.js', '.css'));
+  }
+
+
+  /**
+   * @param string $file
+   * @return string
+   */
+  private function getSuffix($file)
+  {
+    $suffix = strrchr($file, '.');
+    return strtolower($suffix);
   }
 
 
@@ -226,6 +237,50 @@ class Compiler
 
 
   /**
+   * Load existing JS and CSS files to property.
+   */
+  private function loadFiles()
+  {
+    $files = Finder::findFiles('*.js', '*.css')->from($this->getOutputDir());
+
+    foreach ($files as $file => $fileInfo) {
+      $this->files[] = $file;
+    }
+  }
+
+
+  /**
+   * Save content from remote library to local.
+   *
+   * @param string $url
+   */
+  private function saveFile($url)
+  {
+    // get name of library with possible directory
+    list(,$name) = explode('~', $url);
+
+    $content = $this->getContent($url) . PHP_EOL;
+    $suffix = $this->getSuffix($name);
+    $directory = dirname($name) !== '.' ? dirname($name) . File::DS : '';
+
+    // set filename to linkable file or original name
+    $filename = $this->isLinkable($name) ? $this->filename . $suffix : basename($name);
+
+    $path = $this->getOutputDir() . File::DS . $directory . $filename;
+
+    // TODO: move auto create directory path to File::write
+    if (!file_exists(dirname($path))) {
+      mkdir(dirname($path), 0777, true);
+    }
+    File::write($path, $content, true);
+
+    if ($this->isLinkable($name) && !in_array($path, $this->files)) {
+      $this->files[] = $path;
+    }
+  }
+
+
+  /**
    * @param string $url
    * @return string
    * @throws LibraryNotFoundException
@@ -233,6 +288,7 @@ class Compiler
   private function getContent($url)
   {
     try {
+      $url = str_replace('~', '/', $url);
       $content = File::read($url, false);
       return $content;
     }

@@ -37,10 +37,10 @@ class CompilerTest extends \Tester\TestCase
 
 
   private $expectedLibraries = array(
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0/knockout-debug.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208/snowstorm-min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1~jquery.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0~knockout-min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/knockout/3.2.0~knockout-debug.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/Snowstorm/20131208~snowstorm-min.js',
   );
 
 
@@ -118,7 +118,7 @@ class CompilerTest extends \Tester\TestCase
       ->setOutputDir($outputDir)
       ->generate();
 
-    $expectedHash = '33a3dd5adafa1bf892033984ca4fb53f'; // MD5(serialize({libraries}))
+    $expectedHash = 'c6cf21d35c8cef68c0367a731a57e280'; // MD5(serialize({libraries}))
     $hashFile = $outputDir . '/hash';
     Assert::same($expectedHash, file_get_contents($hashFile));
 
