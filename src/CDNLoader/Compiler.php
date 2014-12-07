@@ -12,7 +12,7 @@ use Nette\Utils\Finder;
 class Compiler
 {
   /** @var string */
-  private $cdnUrl = 'https://cdnjs.cloudflare.com/ajax/libs/{{NAME}}/{{VERSION}}~{{FILE}}';
+  private $cdnUrl = 'https://cdnjs.cloudflare.com/ajax/libs/{{NAME}}/{{VERSION}}/{{FILE}}';
 
   /** @var string */
   private $outputDir;
