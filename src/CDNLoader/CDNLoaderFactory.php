@@ -30,7 +30,8 @@ class CDNLoaderFactory
   public function create()
   {
     $compiler = $this->container->getService('cdnloader.compiler');
-    $loader = new CDNLoader($compiler);
+    $httpRequest = $this->container->getService('httpRequest');
+    $loader = new CDNLoader($compiler, $httpRequest);
 
     return $loader;
   }

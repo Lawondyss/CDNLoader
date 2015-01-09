@@ -8,21 +8,27 @@
 namespace CDNLoader;
 
 use Nette\Utils\Html;
+use Nette\Http\IRequest;
 
 class CDNLoader extends \Nette\Application\UI\Control
 {
   /** @var \CDNLoader\Compiler */
   private $compiler;
 
+  /** @var \Nette\Http\IRequest */
+  private $httpRequest;
+
 
   /**
    * @param Compiler $compiler
+   * @param IRequest $httpRequest
    */
-  public function __construct(Compiler $compiler)
+  public function __construct(Compiler $compiler, IRequest $httpRequest)
   {
     parent::__construct();
 
     $this->compiler = $compiler;
+    $this->httpRequest = $httpRequest;
   }
 
 
@@ -43,6 +49,7 @@ class CDNLoader extends \Nette\Application\UI\Control
     }
 
     $type = substr(strrchr($source, '.'), 1);
+    $source = $this->getBasePath() . $source;
 
     switch ($type) {
       case 'js':
@@ -62,6 +69,13 @@ class CDNLoader extends \Nette\Application\UI\Control
     }
 
     return $element;
+  }
+
+
+  public function getBasePath()
+  {
+    $baseUrl = $this->httpRequest->getUrl()->basePath;
+    return $baseUrl;
   }
 
 
