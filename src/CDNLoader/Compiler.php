@@ -11,7 +11,7 @@ use Nette\Utils\Finder;
 
 class Compiler
 {
-  /** @var string */
+  /** @var string Character ~ between version and file is intentionally to recognize the file! */
   private $cdnUrl = 'https://cdnjs.cloudflare.com/ajax/libs/{{NAME}}/{{VERSION}}~{{FILE}}';
 
   /** @var string */
