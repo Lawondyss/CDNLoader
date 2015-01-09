@@ -3,6 +3,14 @@ CDNLoader
 
 Tool for loading CSS and JS files from [cdnjs.com] into web pages.
 
+Install
+-------
+
+Over [Composer]:
+```
+composer require lawondyss/cdnloader
+```
+
 Example
 -------
 
@@ -90,3 +98,4 @@ protected function createComponentCdnLoader()
 ```
 
 [cdnjs.com]:http://cdnjs.com/
+[Composer]:https://getcomposer.org/
